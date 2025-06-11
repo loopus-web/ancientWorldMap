@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Uncial+Antiqua&display=swap');
+
+:root {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #f4f1e8;
+  background-color: #1a1206;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  letter-spacing: 0.02em;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(74, 44, 23, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(45, 27, 15, 0.3) 0%, transparent 40%),
+    linear-gradient(135deg, #1a1206 0%, #2d2418 50%, #3f342a 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><filter id="antiquePaper"><feTurbulence baseFrequency="0.03" numOctaves="4" result="noise" seed="3"/><feDiffuseLighting in="noise" lighting-color="%23faf7f0" surfaceScale="1"><feDistantLight azimuth="45" elevation="60"/></feDiffuseLighting></filter></defs><rect width="300" height="300" fill="%23f5f0e1" filter="url(%23antiquePaper)" opacity="0.15"/></svg>') repeat;
+  pointer-events: none;
+  z-index: -2;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+button {
+  border-radius: 0.4rem;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  padding: 0.7rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  background: 
+    linear-gradient(135deg, 
+      #faf7f0 0%, 
+      #f5f0e1 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #3c2415;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  user-select: none;
+  box-shadow: 
+    0 3px 8px rgba(26, 18, 6, 0.4),
+    inset 0 1px 0 rgba(249, 245, 231, 0.8),
+    inset 0 -1px 0 rgba(74, 44, 23, 0.2);
+  letter-spacing: 0.02em;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><rect width="50" height="50" fill="%23faf7f0"/><circle cx="12" cy="18" r="0.3" fill="%23e8dcc0" opacity="0.5"/><circle cx="38" cy="28" r="0.2" fill="%23d4af37" opacity="0.4"/></svg>') repeat;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+button:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  background: 
+    linear-gradient(135deg, 
+      #d4af37 0%, 
+      #cd7f32 100%);
+  color: #faf7f0;
+  box-shadow: 
+    0 5px 15px rgba(26, 18, 6, 0.6),
+    0 0 0 2px rgba(212, 175, 55, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  text-shadow: 1px 1px 2px rgba(74, 44, 23, 0.5);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 6px rgba(26, 18, 6, 0.5),
+    inset 0 2px 4px rgba(74, 44, 23, 0.3);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.7);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: rgba(249, 245, 231, 0.3);
+  color: rgba(60, 36, 21, 0.6);
+}
+
+.scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.7) rgba(74, 44, 23, 0.3);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(74, 44, 23, 0.3);
+  border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: 
+    linear-gradient(180deg, 
+      rgba(212, 175, 55, 0.8) 0%, 
+      rgba(139, 105, 20, 0.9) 100%);
+  border-radius: 3px;
+  border: 1px solid rgba(74, 44, 23, 0.4);
+  transition: background 0.2s ease;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: 
+    linear-gradient(180deg, 
+      rgba(212, 175, 55, 1) 0%, 
+      rgba(139, 105, 20, 1) 100%);
+}
+
+.performance-optimized {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+input[type="checkbox"] {
+  accent-color: #d4af37;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.3rem;
+  border: 2px solid #cd7f32;
+  background: #faf7f0;
+}
+
+input[type="range"] {
+  accent-color: #d4af37;
+  background: rgba(249, 245, 231, 0.2);
+  border-radius: 0.5rem;
+}
+
+select {
+  background: 
+    linear-gradient(135deg, 
+      #faf7f0 0%, 
+      #f5f0e1 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 0.4rem;
+  color: #3c2415;
+  padding: 0.7rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: 
+    0 2px 6px rgba(26, 18, 6, 0.3),
+    inset 0 1px 0 rgba(249, 245, 231, 0.8);
+}
+
+select:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  background: 
+    linear-gradient(135deg, 
+      #d4af37 0%, 
+      #cd7f32 100%);
+  color: #faf7f0;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.min-h-0 {
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+  
+  button {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.75rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .scroll-container::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+  
+  button {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.7rem;
+  }
+  
+  input[type="checkbox"] {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  button:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #3c2415;
+    background-color: #faf7f0;
+  }
+  
+  html, body {
+    background: 
+      radial-gradient(circle at 15% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(139, 105, 20, 0.08) 0%, transparent 40%),
+      linear-gradient(135deg, #faf7f0 0%, #f5f0e1 50%, #f0e8d0 100%);
+  }
+}
