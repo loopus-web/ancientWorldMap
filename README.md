@@ -2,7 +2,6 @@
 
 A beautiful and interactive fantasy map generator built with React. Create, explore, and save detailed medieval-style maps with various terrains, settlements, and points of interest.
 
-![Ancient World Map](./client/public/preview.png)
 
 ## ✨ Features
 
@@ -111,6 +110,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📧 Contact
 
-Your Name - [your@email.com](mailto:your@email.com)
 
-Project Link: [https://github.com/yourusername/ancient-world-map](https://github.com/yourusername/ancient-world-map) 
+Project Link: [https://github.com/yourusername/ancient-world-map](https://github.com/loopus-web/ancient-world-map) 
