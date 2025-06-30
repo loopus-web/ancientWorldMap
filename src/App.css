@@ -730,6 +730,145 @@ body::before {
   cursor: grabbing;
 }
 
+/* Amélioration des boutons de contrôle */
+.control-button.theme-button {
+  background: linear-gradient(135deg, var(--accent-bronze) 0%, var(--accent-gold) 100%);
+  border-color: var(--accent-gold);
+  color: var(--paper-cream);
+  font-weight: 700;
+}
+
+.control-button.theme-button:hover {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-bronze) 100%);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4), 0 0 0 2px var(--accent-gold);
+}
+
+/* Panneau d'événements moderne */
+.event-panel {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Sélecteur de thème moderne */
+.theme-selector-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.theme-selector {
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Amélioration des panneaux glass morphism */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-backdrop);
+  -webkit-backdrop-filter: var(--blur-backdrop);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Effets de survol améliorés */
+.feature-stat {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-stat:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 8px 24px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(249, 245, 231, 0.9);
+}
+
+/* Styles pour les informations détaillées des villes */
+.city-detail-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(139, 105, 20, 0.15) 100%);
+  border: 1px solid var(--accent-bronze);
+  border-radius: 0.5rem;
+}
+
+.trade-info {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.trade-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+}
+
+/* Animation pour les nouvelles routes commerciales */
+.trade-route-new {
+  animation: tradeRouteAppear 2s ease-out;
+}
+
+@keyframes tradeRouteAppear {
+  from {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Scrollbar personnalisée */
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: var(--accent-bronze);
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
+}
+
 .hex-map-container canvas {
   cursor: inherit;
 }

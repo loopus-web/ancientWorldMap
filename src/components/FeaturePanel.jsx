@@ -1,9 +1,92 @@
-import { memo } from 'react'
+import { memo, useState, useEffect } from 'react'
 
-const FeaturePanel = memo(({ feature, onClose }) => {
+const FeaturePanel = memo(({ feature, onClose, theme }) => {
+  const [detailedInfo, setDetailedInfo] = useState(null)
+  
+  useEffect(() => {
+    if (feature) {
+      // Générer des informations détaillées basées sur le type de feature
+      const info = generateDetailedInfo(feature, theme)
+      setDetailedInfo(info)
+    }
+  }, [feature, theme])
+
   if (!feature) return null
 
+  const generateDetailedInfo = (feature, theme) => {
+    const info = {
+      history: generateHistory(feature, theme),
+      ruler: generateRuler(feature, theme),
+      trade: generateTradeInfo(feature),
+      relations: generateRelations(feature)
+    }
+    return info
+  }
+
+  const generateHistory = (feature, theme) => {
+    const age = Math.floor(Math.random() * 500 + 100)
+    const events = [
+      `Founded ${age} years ago`,
+      'Survived the Great War',
+      'Center of ancient knowledge',
+      'Built on sacred grounds',
+      'Former capital of a lost kingdom'
+    ]
+    return events[Math.floor(Math.random() * events.length)]
+  }
+
+  const generateRuler = (feature, theme) => {
+    if (feature.type === 'village') return null
+    
+    const titles = {
+      medieval: ['Lord', 'Lady', 'Duke', 'Duchess', 'Baron', 'Baroness'],
+      fantasy: ['Archmage', 'Elder', 'Keeper', 'Guardian', 'Mystic', 'Oracle'],
+      scifi: ['Governor', 'Administrator', 'Director', 'Coordinator', 'Overseer'],
+      steampunk: ['Inventor', 'Engineer', 'Master', 'Architect', 'Magistrate']
+    }
+    
+    const names = {
+      medieval: ['Edmund', 'Eleanor', 'Richard', 'Isabella', 'William', 'Margaret'],
+      fantasy: ['Eldrin', 'Lyralei', 'Thorne', 'Seraphina', 'Zephyr', 'Luna'],
+      scifi: ['Vex-7', 'Nova', 'Zara', 'Orion', 'Echo', 'Nexus'],
+      steampunk: ['Cornelius', 'Victoria', 'Percival', 'Beatrice', 'Augustus', 'Ophelia']
+    }
+    
+    const themeTitles = titles[theme] || titles.medieval
+    const themeNames = names[theme] || names.medieval
+    
+    const title = themeTitles[Math.floor(Math.random() * themeTitles.length)]
+    const name = themeNames[Math.floor(Math.random() * themeNames.length)]
+    
+    return `${title} ${name}`
+  }
+
+  const generateTradeInfo = (feature) => {
+    if (feature.type === 'poi') return null
+    
+    const exports = ['Grain', 'Iron', 'Textiles', 'Pottery', 'Wine', 'Tools', 'Herbs', 'Livestock']
+    const imports = ['Spices', 'Silk', 'Gold', 'Books', 'Weapons', 'Medicine', 'Luxury goods']
+    
+    const numExports = Math.floor(Math.random() * 3) + 1
+    const numImports = Math.floor(Math.random() * 3) + 1
+    
+    return {
+      exports: Array.from({ length: numExports }, () => 
+        exports[Math.floor(Math.random() * exports.length)]
+      ).filter((v, i, a) => a.indexOf(v) === i),
+      imports: Array.from({ length: numImports }, () => 
+        imports[Math.floor(Math.random() * imports.length)]
+      ).filter((v, i, a) => a.indexOf(v) === i)
+    }
+  }
+
+  const generateRelations = (feature) => {
+    const relations = ['Allied', 'Neutral', 'Tense', 'Trading Partner', 'Rival']
+    return relations[Math.floor(Math.random() * relations.length)]
+  }
+
   const getFeatureIcon = (feature) => {
+    if (feature.icon) return feature.icon
     if (feature.type === 'city') return '🏛️'
     if (feature.type === 'town') return '🏘️'
     if (feature.type === 'village') return '🏠'
@@ -267,6 +350,89 @@ const FeaturePanel = memo(({ feature, onClose }) => {
               letterSpacing: '0.02em'
             }}>
               {feature.type}
+            </div>
+          </div>
+        )}
+
+        {detailedInfo && detailedInfo.history && (
+          <div className="feature-stat">
+            <div style={{
+              fontWeight: '600',
+              color: 'var(--ink-brown)',
+              marginBottom: '0.5rem',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontFamily: "'Cinzel', serif",
+              letterSpacing: '0.02em'
+            }}>
+              📜 History
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              color: 'var(--text-medium)',
+              fontStyle: 'italic'
+            }}>
+              {detailedInfo.history}
+            </div>
+          </div>
+        )}
+
+        {detailedInfo && detailedInfo.ruler && (
+          <div className="feature-stat">
+            <div style={{
+              fontWeight: '600',
+              color: 'var(--ink-brown)',
+              marginBottom: '0.5rem',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontFamily: "'Cinzel', serif",
+              letterSpacing: '0.02em'
+            }}>
+              👑 Ruler
+            </div>
+            <div style={{
+              fontSize: '1rem',
+              color: 'var(--accent-bronze)',
+              fontWeight: '600',
+              fontFamily: "'Cinzel', serif"
+            }}>
+              {detailedInfo.ruler}
+            </div>
+          </div>
+        )}
+
+        {detailedInfo && detailedInfo.trade && (
+          <div className="feature-stat">
+            <div style={{
+              fontWeight: '600',
+              color: 'var(--ink-brown)',
+              marginBottom: '0.5rem',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontFamily: "'Cinzel', serif",
+              letterSpacing: '0.02em'
+            }}>
+              📦 Trade
+            </div>
+            <div style={{ fontSize: '0.9rem' }}>
+              <div style={{ marginBottom: '0.3rem' }}>
+                <span style={{ color: 'var(--accent-gold)', fontWeight: '600' }}>Exports:</span>{' '}
+                <span style={{ color: 'var(--text-medium)' }}>
+                  {detailedInfo.trade.exports.join(', ')}
+                </span>
+              </div>
+              <div>
+                <span style={{ color: 'var(--accent-bronze)', fontWeight: '600' }}>Imports:</span>{' '}
+                <span style={{ color: 'var(--text-medium)' }}>
+                  {detailedInfo.trade.imports.join(', ')}
+                </span>
+              </div>
             </div>
           </div>
         )}

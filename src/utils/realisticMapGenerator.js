@@ -1,3 +1,5 @@
+import { getRandomName, getRandomSpecialty, getRandomPOI } from './worldThemes'
+
 class SimplexNoise {
   constructor(seed = Math.random()) {
     this.seed = seed
@@ -70,10 +72,11 @@ class SimplexNoise {
 }
 
 export class RealisticMapGenerator {
-  constructor(width = 2000, height = 1500, seed = Math.random()) {
+  constructor(width = 2000, height = 1500, seed = Math.random(), theme = 'medieval') {
     this.width = width
     this.height = height
     this.seed = seed
+    this.theme = theme
     this.mainSeed = seed
     this.elevationSeed = seed * 1.5
     this.moistureSeed = seed * 2.0
@@ -98,8 +101,9 @@ export class RealisticMapGenerator {
       rivers: [],
       roads: []
     }
+    this.activeTradeRoutes = []
     
-    console.log(`🎲 New map with seed: ${seed}`)
+    console.log(`🎲 New ${theme} map with seed: ${seed}`)
   }
 
   generateContinents() {
@@ -685,26 +689,21 @@ export class RealisticMapGenerator {
   }
 
   generatePOIs() {
-    const poiTypes = [
-      { type: 'ruin', count: 30, biomes: ['grassland', 'forest', 'desert'] },
-      { type: 'mine', count: 20, biomes: ['mountain', 'snow_mountain'] },
-      { type: 'temple', count: 15, biomes: ['grassland', 'forest', 'mountain'] },
-      { type: 'tower', count: 12, biomes: ['grassland', 'coast'] },
-      { type: 'cave', count: 25, biomes: ['mountain', 'forest'] }
-    ]
+    const poiCount = 40 + Math.floor(Math.random() * 30)
     
-    poiTypes.forEach(poiType => {
-      for (let i = 0; i < poiType.count; i++) {
-        const location = this.findPOILocation(poiType.biomes)
-        if (location) {
-          this.features.pois.push({
-            ...location,
-            type: poiType.type,
-            name: this.generatePOIName(poiType.type)
-          })
-        }
+    for (let i = 0; i < poiCount; i++) {
+      const biomes = ['grassland', 'forest', 'desert', 'mountain', 'snow_mountain', 'coast']
+      const location = this.findPOILocation(biomes)
+      if (location) {
+        const poi = getRandomPOI(this.theme)
+        this.features.pois.push({
+          ...location,
+          type: poi.type,
+          name: poi.name,
+          icon: poi.icon
+        })
       }
-    })
+    }
   }
 
   findPOILocation(validBiomes) {
@@ -725,94 +724,79 @@ export class RealisticMapGenerator {
   }
 
   generateCityName() {
-    const prefixes = ['Astra', 'Magna', 'Prima', 'Regis', 'Alba', 'Aurea', 'Sancta']
-    const suffixes = ['burg', 'haven', 'port', 'ford', 'hall', 'heim', 'garde']
-    return prefixes[Math.floor(Math.random() * prefixes.length)] + 
-           suffixes[Math.floor(Math.random() * suffixes.length)]
+    return getRandomName(this.theme, 'city')
   }
 
   generateTownName() {
-    const names = ['Millbrook', 'Stonehaven', 'Riverside', 'Oakdale', 'Thornfield', 'Goldmeadow', 'Silverbrook', 'Ironwood', 'Redhill', 'Greenvalley']
-    return names[Math.floor(Math.random() * names.length)]
+    return getRandomName(this.theme, 'town')
   }
 
   generateVillageName() {
-    const names = ['Little Creek', 'Old Mill', 'Crossroads', 'Pebble Beach', 'Misty Hollow', 'Quiet Grove', 'Sunny Fields', 'Rocky Point', 'Pine Rest', 'Meadow View']
-    return names[Math.floor(Math.random() * names.length)]
+    return getRandomName(this.theme, 'village')
   }
 
   generatePOIName(type) {
-    const names = {
-      ruin: ['Ancient Ruins', 'Lost Temple', 'Forgotten Keep', 'Old Tower', 'Crumbling Fortress'],
-      mine: ['Iron Mine', 'Gold Quarry', 'Silver Pit', 'Copper Works', 'Stone Quarry'],
-      temple: ['Sacred Grove', 'Holy Shrine', 'Divine Temple', 'Sacred Circle', 'Ancient Altar'],
-      tower: ['Wizard Tower', 'Watch Tower', 'Signal Beacon', 'Lone Spire', 'Guardian Tower'],
-      cave: ['Dark Cave', 'Crystal Cavern', 'Hidden Grotto', 'Deep Hollow', 'Mystery Cave']
-    }
-    const typeNames = names[type] || ['Mysterious Place']
-    return typeNames[Math.floor(Math.random() * typeNames.length)]
+    const poi = getRandomPOI(this.theme)
+    return poi.name
   }
 
   generateCitySpecialty() {
-    const specialties = [
-      'Maritime Trade', 'Arts & Culture', 'Magic Academy', 'Royal Forge',
-      'Diplomatic Center', 'Merchant Port', 'Religious Capital', 'Guild City'
-    ]
-    return specialties[Math.floor(Math.random() * specialties.length)]
+    return getRandomSpecialty(this.theme, 'city')
   }
 
   generateTownSpecialty() {
-    const specialties = [
-      'Regional Market', 'Craftsmanship', 'Inn-Relay', 'Local Mine',
-      'Livestock', 'Agriculture', 'Wood & Carpentry', 'Textile'
-    ]
-    return specialties[Math.floor(Math.random() * specialties.length)]
+    return getRandomSpecialty(this.theme, 'town')
   }
 
   generateVillageSpecialty() {
-    const specialties = [
-      'Farm', 'Fishing', 'Hunting', 'Herbalism',
-      'Miller', 'Blacksmith', 'Inn', 'Shepherd'
-    ]
-    return specialties[Math.floor(Math.random() * specialties.length)]
+    return getRandomSpecialty(this.theme, 'village')
   }
 
   generateTradeRoutes() {
+    // Les routes commerciales seront créées dynamiquement par le système d'événements
+    // Ici on crée juste quelques routes initiales
     const allSettlements = [
       ...this.features.cities.map(c => ({ ...c, type: 'city' })),
       ...this.features.towns.map(t => ({ ...t, type: 'town' }))
     ]
 
-    allSettlements.forEach(settlement => {
-      const nearbySettlements = allSettlements
-        .filter(other => other !== settlement)
-        .map(other => ({
-          ...other,
-          distance: Math.sqrt((other.x - settlement.x) ** 2 + (other.y - settlement.y) ** 2)
-        }))
-        .filter(other => other.distance < 300)
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, settlement.type === 'city' ? 4 : 2)
-
-      nearbySettlements.forEach(target => {
-        const routeExists = this.features.roads.some(road =>
-          (road.from.x === settlement.x && road.from.y === settlement.y &&
-           road.to.x === target.x && road.to.y === target.y) ||
-          (road.from.x === target.x && road.from.y === target.y &&
-           road.to.x === settlement.x && road.to.y === settlement.y)
-        )
-
-        if (!routeExists) {
-          const route = this.generateRoute(settlement, target)
-          this.features.roads.push({
-            from: { x: settlement.x, y: settlement.y, name: settlement.name },
-            to: { x: target.x, y: target.y, name: target.name },
-            path: route,
-            type: settlement.type === 'city' && target.type === 'city' ? 'major' : 'minor'
-          })
-        }
-      })
+    // Créer seulement quelques routes essentielles entre les grandes villes
+    const cities = this.features.cities.slice(0, 3)
+    cities.forEach((city, index) => {
+      if (index < cities.length - 1) {
+        const nextCity = cities[index + 1]
+        const route = this.generateRoute(city, nextCity)
+        this.features.roads.push({
+          from: { x: city.x, y: city.y, name: city.name },
+          to: { x: nextCity.x, y: nextCity.y, name: nextCity.name },
+          path: route,
+          type: 'major',
+          established: true,
+          createdAt: 0
+        })
+      }
     })
+  }
+
+  addTradeRoute(fromSettlement, toSettlement, createdAt) {
+    const routeExists = this.features.roads.some(road =>
+      (road.from.name === fromSettlement.name && road.to.name === toSettlement.name) ||
+      (road.from.name === toSettlement.name && road.to.name === fromSettlement.name)
+    )
+
+    if (!routeExists) {
+      const route = this.generateRoute(fromSettlement, toSettlement)
+      this.features.roads.push({
+        from: { x: fromSettlement.x, y: fromSettlement.y, name: fromSettlement.name },
+        to: { x: toSettlement.x, y: toSettlement.y, name: toSettlement.name },
+        path: route,
+        type: fromSettlement.type === 'city' && toSettlement.type === 'city' ? 'major' : 'minor',
+        established: false,
+        createdAt: createdAt
+      })
+      return true
+    }
+    return false
   }
 
   generateRoute(start, end) {
@@ -851,7 +835,7 @@ export class RealisticMapGenerator {
   }
 
   generate() {
-    console.log('Generating advanced realistic map...')
+    console.log(`Generating ${this.theme} world...`)
     this.generateElevation()
     this.generateMoisture()
     this.generateTemperature()
@@ -860,11 +844,12 @@ export class RealisticMapGenerator {
     this.generateSettlements()
     this.generatePOIs()
     this.generateTradeRoutes()
-    console.log('Realistic map generated with trade routes!')
+    console.log(`${this.theme} world generated!`)
     
     return {
       width: this.width,
       height: this.height,
+      theme: this.theme,
       elevationMap: this.elevationMap,
       moistureMap: this.moistureMap,
       temperatureMap: this.temperatureMap,

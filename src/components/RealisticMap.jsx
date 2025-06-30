@@ -4,8 +4,13 @@ import RealisticMiniMap from './RealisticMiniMap'
 import MapLegend from './MapLegend'
 import FeaturePanel from './FeaturePanel'
 import MapSaveLoad from './MapSaveLoad'
+import EventPanel from './EventPanel'
+import ThemeSelector from './ThemeSelector'
+import WeatherSystem from './WeatherSystem'
+import { EventSystem } from '../utils/eventSystem'
+import { worldThemes } from '../utils/worldThemes'
 
-const RealisticMap = () => {
+const RealisticMap = ({ onThemeChange }) => {
   const [viewPosition, setViewPosition] = useState({ x: -500, y: -375 })
   const [viewScale, setViewScale] = useState(0.8)
   const [selectedFeature, setSelectedFeature] = useState(null)
@@ -25,6 +30,11 @@ const RealisticMap = () => {
     routes: true,
     rivers: true
   })
+  const [worldTheme, setWorldTheme] = useState('medieval')
+  const [showThemeSelector, setShowThemeSelector] = useState(false)
+  const [showEventPanel, setShowEventPanel] = useState(false)
+  const [eventSystem, setEventSystem] = useState(null)
+  const [recentEvents, setRecentEvents] = useState([])
   
   // États pour le marqueur du groupe joueur
   const [playerGroup, setPlayerGroup] = useState({ 
@@ -80,9 +90,18 @@ const RealisticMap = () => {
   useEffect(() => {
     const fetchMapData = async () => {
       const { RealisticMapGenerator } = await import('../utils/realisticMapGenerator')
-      const generator = new RealisticMapGenerator(2000, 1500)
+      const generator = new RealisticMapGenerator(2000, 1500, Math.random(), worldTheme)
       const data = generator.generate()
       setMapData(data)
+      
+      // Initialiser le système d'événements
+      const newEventSystem = new EventSystem(worldTheme)
+      setEventSystem(newEventSystem)
+      
+      // Notifier le changement de thème au parent
+      if (onThemeChange) {
+        onThemeChange(worldTheme)
+      }
       
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
@@ -90,7 +109,7 @@ const RealisticMap = () => {
     }
     
     fetchMapData()
-  }, [])
+  }, [worldTheme, onThemeChange])
 
   const handleMouseDown = useCallback((e) => {
     setIsDragging(true)
@@ -199,6 +218,45 @@ const RealisticMap = () => {
     }
   }, [])
 
+  // Mise à jour du système d'événements
+  useEffect(() => {
+    if (!eventSystem) return
+
+    const eventInterval = setInterval(() => {
+      eventSystem.update(1000) // Update toutes les secondes
+      const events = eventSystem.getRecentEvents(5)
+      setRecentEvents(events)
+      
+      // Créer de nouvelles routes commerciales basées sur les événements
+      const activeRoutes = eventSystem.getActiveTradeRoutes()
+      if (mapData && activeRoutes.length > 0) {
+        // Logic pour ajouter des routes commerciales progressivement
+        const allSettlements = [
+          ...mapData.features.cities.map(c => ({ ...c, type: 'city' })),
+          ...mapData.features.towns.map(t => ({ ...t, type: 'town' }))
+        ]
+        
+        // Sélectionner deux villes aléatoires pour une nouvelle route
+        if (Math.random() < 0.1 && allSettlements.length >= 2) {
+          const from = allSettlements[Math.floor(Math.random() * allSettlements.length)]
+          const to = allSettlements[Math.floor(Math.random() * allSettlements.length)]
+          
+          if (from !== to) {
+            const { RealisticMapGenerator } = require('../utils/realisticMapGenerator')
+            const generator = new RealisticMapGenerator(mapData.width, mapData.height, 0, worldTheme)
+            generator.features = mapData.features
+            
+            if (generator.addTradeRoute(from, to, Date.now())) {
+              setMapData({ ...mapData })
+            }
+          }
+        }
+      }
+    }, 1000)
+
+    return () => clearInterval(eventInterval)
+  }, [eventSystem, mapData, worldTheme])
+
   const handleWheel = useCallback((e) => {
     e.preventDefault()
     const delta = e.deltaY > 0 ? 0.9 : 1.1
@@ -237,11 +295,17 @@ const RealisticMap = () => {
   const generateNewMap = useCallback(async () => {
     setMapData(null)
     const { RealisticMapGenerator } = await import('../utils/realisticMapGenerator')
-    const generator = new RealisticMapGenerator(2000, 1500, Math.random())
+    const generator = new RealisticMapGenerator(2000, 1500, Math.random(), worldTheme)
     const data = generator.generate()
     setMapData(data)
+    
+    // Réinitialiser le système d'événements
+    const newEventSystem = new EventSystem(worldTheme)
+    setEventSystem(newEventSystem)
+    setRecentEvents([])
+    
     resetView()
-  }, [resetView])
+  }, [resetView, worldTheme])
 
   const handleFeatureHover = useCallback((feature, event) => {
     setHoveredFeature(feature)
@@ -408,10 +472,37 @@ const RealisticMap = () => {
         onFilterChange={handleFilterChange}
       />
 
+      <WeatherSystem
+        mapData={mapData}
+        theme={worldTheme}
+      />
+
       {showFeaturePanel && (
         <FeaturePanel
           feature={selectedFeature}
           onClose={closeFeaturePanel}
+          theme={worldTheme}
+        />
+      )}
+
+      {showEventPanel && (
+        <EventPanel
+          events={recentEvents}
+          theme={worldTheme}
+          visible={showEventPanel}
+          onClose={() => setShowEventPanel(false)}
+        />
+      )}
+
+      {showThemeSelector && (
+        <ThemeSelector
+          currentTheme={worldTheme}
+          onThemeChange={(newTheme) => {
+            setWorldTheme(newTheme)
+            generateNewMap()
+          }}
+          visible={showThemeSelector}
+          onClose={() => setShowThemeSelector(false)}
         />
       )}
 
@@ -434,6 +525,12 @@ const RealisticMap = () => {
         </button>
         <button className="control-button" onClick={generateNewMap}>
           🗺️ New Map
+        </button>
+        <button className="control-button theme-button" onClick={() => setShowThemeSelector(true)}>
+          {worldThemes[worldTheme]?.icon || '🌍'} Theme
+        </button>
+        <button className="control-button" onClick={() => setShowEventPanel(!showEventPanel)}>
+          📜 Events {recentEvents.length > 0 && `(${recentEvents.length})`}
         </button>
         <button className="control-button" onClick={toggleFullscreen}>
           {isFullscreen ? '🪟 Window' : '🖥️ Fullscreen'}
